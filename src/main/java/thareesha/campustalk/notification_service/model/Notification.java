@@ -3,7 +3,8 @@ package thareesha.campustalk.notification_service.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.Instant;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notifications")
@@ -18,23 +19,17 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // owner of this notification (user id from Auth/Identity service)
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private Long userId;  // Microservice-safe user reference
 
-    private String title;
-
-    @Column(nullable = false, columnDefinition = "text")
     private String message;
 
-    private String type; // POST, EVENT, LIKE, COMMENT, SYSTEM
+    private String type; // POST, EVENT, LIKE, COMMENT
 
-    @Column(name = "reference_id")
-    private Long referenceId;
-
-    @Column(name = "is_read", nullable = false)
+    @Column(name = "is_read")
     private boolean read = false;
 
-    @Column(name = "created_at", nullable = false)
-    private Instant createdAt = Instant.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private Long referenceId; // Event/Post ID etc.
 }
+

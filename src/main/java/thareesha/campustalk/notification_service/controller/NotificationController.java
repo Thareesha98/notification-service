@@ -13,70 +13,68 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * Important:
- * - This microservice expects the API Gateway to authenticate the user and forward user's id
- *   in a header X-User-Id (or the JWT could be validated here).
- */
+
+import lombok.RequiredArgsConstructor;
+
+
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/notifications")
+@RequiredArgsConstructor
 public class NotificationController {
 
-    private final NotificationService service;
+    private final NotificationService notificationService;
 
-    public NotificationController(NotificationService service) {
-        this.service = service;
+    // Gateway must pass X-User-Id
+    private Long getUserIdFromGateway(@RequestHeader("X-User-Id") Long userId) {
+        return userId;
     }
 
-    // Create notification (used by other services - e.g., posts-service will call this)
-    // Note: For inter-service calls you may secure this endpoint with a service-to-service token.
+    // CREATE
     @PostMapping
-    public ResponseEntity<NotificationDTO> createNotification(@RequestHeader(value = "X-User-Id", required = false) Long headerUserId,
-                                                              @Valid @RequestBody CreateNotificationRequest req) {
-        // Prefer header if present (gateway or auth), else use request body userId (internal calls/admin)
-        Long userId = headerUserId != null ? headerUserId : req.getUserId();
-        Notification saved = service.createNotification(userId, req.getTitle(), req.getMessage(), req.getType(), req.getReferenceId());
-        return ResponseEntity.ok(toDto(saved));
+    public ResponseEntity<NotificationDTO> create(
+            @RequestHeader("X-User-Id") Long callerUserId, // from gateway
+            @RequestBody Map<String, Object> body
+    ) {
+        Long userId = ((Number) body.get("userId")).longValue();
+        String title = (String) body.get("title");
+        String message = (String) body.get("message");
+        String type = (String) body.get("type");
+        Long referenceId = body.get("referenceId") == null ? null : ((Number) body.get("referenceId")).longValue();
+
+        NotificationDTO dto = notificationService.create(
+                userId, title, message, type, referenceId
+        );
+
+        return ResponseEntity.ok(dto);
     }
 
-    // Get auth user's notifications
+    // LIST
     @GetMapping
-    public ResponseEntity<List<NotificationDTO>> getNotifications(@RequestHeader("X-User-Id") Long userId) {
-        List<NotificationDTO> dtos = service.getUserNotifications(userId)
-                .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<List<Notification>> list(
+            @RequestHeader("X-User-Id") Long userId
+    ) {
+        return ResponseEntity.ok(notificationService.listForUser(userId));
     }
 
-    // Unread count
+    // UNREAD COUNT
     @GetMapping("/unread-count")
-    public ResponseEntity<?> unreadCount(@RequestHeader("X-User-Id") Long userId) {
-        long count = service.countUnread(userId);
-        return ResponseEntity.ok(new UnreadCountResponse(count));
+    public ResponseEntity<?> unreadCount(
+            @RequestHeader("X-User-Id") Long userId
+    ) {
+        return ResponseEntity.ok(Map.of("count", notificationService.unreadCount(userId)));
     }
 
-    // Mark as read
+    // MARK READ
     @PostMapping("/{id}/read")
-    public ResponseEntity<?> markAsRead(@RequestHeader("X-User-Id") Long userId, @PathVariable Long id) {
-        service.markAsRead(id, userId);
+    public ResponseEntity<?> markAsRead(
+            @RequestHeader("X-User-Id") Long userId,
+            @PathVariable Long id
+    ) {
+        notificationService.markAsRead(id, userId);
         return ResponseEntity.ok(Map.of("message", "Notification marked as read"));
     }
-
-    private NotificationDTO toDto(Notification n) {
-        return NotificationDTO.builder()
-                .id(n.getId())
-                .title(n.getTitle())
-                .message(n.getMessage())
-                .type(n.getType())
-                .referenceId(n.getReferenceId())
-                .read(n.isRead())
-                .createdAt(n.getCreatedAt())
-                .build();
-    }
-
-    static class UnreadCountResponse {
-        public final long count;
-        public UnreadCountResponse(long count) { this.count = count; }
-    }
 }
+
