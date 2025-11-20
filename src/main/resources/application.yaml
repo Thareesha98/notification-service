@@ -1,36 +1,9 @@
 spring:
   application:
-    name: notification-service
+    name: notification-service   # must match the filename in config-repo
+  config:
+    import: optional:configserver:http://localhost:8888
 
-  datasource:
-    url: jdbc:postgresql://${NOTIF_DB_HOST:localhost}:${NOTIF_DB_PORT:5432}/${NOTIF_DB_NAME:notificationdb}
-    username: ${NOTIF_DB_USER:postgres}
-    password: ${NOTIF_DB_PASS:postgres}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        jdbc:
-          time_zone: UTC
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka/}
-    register-with-eureka: true
-    fetch-registry: true
-
-spring:
-  cloud:
-    config:
-      uri: ${CONFIG_SERVER:http://localhost:8888}
-
+# Local fallback if config-server unreachable
 server:
-  port: ${PORT:8080}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
+  port: 8082
