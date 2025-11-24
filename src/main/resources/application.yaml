@@ -11,7 +11,7 @@ server:
 
 
   datasource:
-    url: jdbc:postgresql://${NOTIF_DB_HOST:localhost}:${NOTIF_DB_PORT:5431}/${NOTIF_DB_NAME:notification_db}
+    url: jdbc:postgresql://${NOTIF_DB_HOST:localhost}:${NOTIF_DB_PORT:5432}/${NOTIF_DB_NAME:notification_db}
     username: ${NOTIF_DB_USER:postgresqluser}
     password: ${NOTIF_DB_PASS:postgresqluserpwd}
   jpa:
