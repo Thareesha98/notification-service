@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String EXCHANGE = "campustalk.notifications.exchange";
-    public static final String ROUTING_KEY = "campustalk.notifications2.key";
+    public static final String ROUTING_KEY = "campustalk.notifications.key";
     public static final String QUEUE = "campustalk.notifications.queue";
 
     @Bean
