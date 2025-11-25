@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import thareesha.campustalk.notification_service.config.RabbitMQConfig;
 import thareesha.campustalk.notification_service.dto.NotificationDTO;
 import thareesha.campustalk.notification_service.event.NotificationEvent;
 import thareesha.campustalk.notification_service.model.Notification;
@@ -16,7 +17,10 @@ import thareesha.campustalk.notification_service.repository.NotificationReposito
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -35,6 +39,7 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final RabbitTemplate rabbitTemplate;
+    private String c;// <-- use ONLY thissss
 
     // 🔥 CREATE + PUBLISH EVENT
     public NotificationDTO create(
@@ -75,22 +80,23 @@ public class NotificationService {
                 .referenceId(referenceId)
                 .build();
 
-        rabbitTemplate.convertAndSend(EXCHANGE, ROUTING_KEY, event);
+        rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE,
+                RabbitMQConfig.ROUTING_KEY,
+                event
+        );
 
         return dto;
     }
 
-    // LIST
     public List<Notification> listForUser(Long userId) {
         return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
 
-    // UNREAD COUNT
     public long unreadCount(Long userId) {
         return notificationRepository.countByUserIdAndReadFalse(userId);
     }
 
-    // MARK READ
     public void markAsRead(Long id, Long userId) {
         Notification n = notificationRepository.findById(id)
                 .filter(no -> no.getUserId().equals(userId))
@@ -100,4 +106,5 @@ public class NotificationService {
         notificationRepository.save(n);
     }
 }
+
 
