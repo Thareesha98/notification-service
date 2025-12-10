@@ -2,7 +2,7 @@ spring:
   application:
     name: notification-service   # must match the filename in config-repo
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://localhost:8880
 
 # Local fallback if config-server unreachable
 server:
