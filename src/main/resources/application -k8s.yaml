@@ -6,4 +6,4 @@ spring:
 
 # Local fallback if config-server unreachable
 server:
-  port: 8082
+  port: 8081
