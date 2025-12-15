@@ -1,9 +1,27 @@
-spring:
-  application:
-    name: notification-service   # must match the filename in config-repo
-  config:
-    import: optional:configserver:http://localhost:8880
+# --- notification-service-dev.yml (in your Git config-repo) ---
 
-# Local fallback if config-server unreachable
-server:
-  port: 8081
+# Database Connection (retrieved from Kubernetes Secrets/ConfigMap in a real environment)
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # Change to 'none' in production
+    show-sql: true
+
+# Messaging Configuration
+rabbitmq:
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USERNAME}
+  password: ${RABBITMQ_PASSWORD}
+  # Additional settings for the Notification Service (e.g., queue/exchange names)
+  notification-exchange: notification-events-exchange
+  contribution-queue: github-contribution-queue
+
+# Example of a custom property
+service:
+  message: "Notification Service is running in ${spring.profiles.active} mode."
