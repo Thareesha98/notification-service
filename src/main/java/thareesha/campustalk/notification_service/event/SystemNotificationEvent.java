@@ -20,7 +20,7 @@ public final class SystemNotificationEvent {
         this.type = normalizedType;
 
         String msg = Objects.requireNonNull(message, "message cannot be null").trim();
-        this.message = msg.length() > 150 ? msg.substring(0, 150) + "..." : msg;
+        this.message = msg.lenth() > 150 ? msg.substring(0, 150) + "..." : msg;
 
         // SMALL CHANGE: ensure positive hash before converting to hex
         int hash = Math.abs(Objects.hash(this.type, this.message, System.nanoTime()));
