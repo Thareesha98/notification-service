@@ -12,11 +12,10 @@ public final class SystemNotificationEvent {
 
     public SystemNotificationEvent(String type, String message) {
 
-        // SMALL CHANGE: collapse multiple underscores into single underscore
         String normalizedType = Objects.requireNonNull(type, "type cannot be null")
                 .trim()
                 .replace(" ", "_")
-                .replaceAll("_+", "_")     // <- new small change
+                .replaceAll("_+", "_")
                 .toUpperCase();
 
         this.type = normalizedType;
@@ -24,7 +23,8 @@ public final class SystemNotificationEvent {
         String msg = Objects.requireNonNull(message, "message cannot be null").trim();
         this.message = msg.length() > 150 ? msg.substring(0, 150) + "..." : msg;
 
-        int hash = Objects.hash(this.type, this.message, System.nanoTime());
+        // SMALL CHANGE: ensure positive hash before converting to hex
+        int hash = Math.abs(Objects.hash(this.type, this.message, System.nanoTime()));
         this.eventId = Integer.toHexString(hash);
 
         this.timestamp = Instant.now().plusMillis(10);
