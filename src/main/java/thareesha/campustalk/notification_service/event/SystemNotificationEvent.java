@@ -11,7 +11,7 @@ import java.util.UUID;
  *
  * It does not depend on Spring, Lombok, or any domain model classes.
  */
-public final class NotificationEvent {
+public final class SystemNotificationEvent {
 
     private final String eventId;
     private final String type;
