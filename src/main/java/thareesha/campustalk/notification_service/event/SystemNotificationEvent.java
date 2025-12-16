@@ -15,7 +15,6 @@ public final class SystemNotificationEvent {
         String normalizedType = Objects.requireNonNull(type, "type cannot be null")
                 .trim()
                 .replace(" ", "_")
-                .replaceAll("_+", "_")
                 .toUpperCase();
 
         this.type = normalizedType;
