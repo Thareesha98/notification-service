@@ -9,7 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update # Change to 'none' in production
+      ddl-auto: create # Change to 'none' in production
     show-sql: true
 
 # Messaging Configuration
