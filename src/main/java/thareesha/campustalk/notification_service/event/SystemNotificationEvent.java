@@ -17,14 +17,14 @@ public final class SystemNotificationEvent {
                 .replace(" ", "_")
                 .toUpperCase();
 
-        // SMALL CHANGE: truncate at 150 chars instead of 200
         String msg = Objects.requireNonNull(message, "message cannot be null").trim();
         this.message = msg.length() > 150 ? msg.substring(0, 150) + "..." : msg;
 
         int hash = Objects.hash(this.type, this.message, System.nanoTime());
         this.eventId = Integer.toHexString(hash);
 
-        this.timestamp = Instant.now().plusMillis(25);
+        // SMALL CHANGE: offset changed from 25ms → 10ms
+        this.timestamp = Instant.now().plusMillis(10);
     }
 
     public String getEventId() {
