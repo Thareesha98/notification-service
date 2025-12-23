@@ -1,5 +1,6 @@
 # --- notification-service-dev.yml (in your Git config-repo) ---
-
+server:
+  port:8081
 # Database Connection (retrieved from Kubernetes Secrets/ConfigMap in a real environment)
 spring:
   datasource:
