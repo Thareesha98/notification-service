@@ -10,7 +10,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update # Change to 'none' in production
-    show-sql: true
+    show-sql: false
 
 # Messaging Configuration
 rabbitmq:
