@@ -12,7 +12,7 @@ spring:
       ddl-auto: update # Change to 'none' in production
     show-sql: false
 
-# Messaging Configuration
+
 rabbitmq:
   host: ${RABBITMQ_HOST}
   port: ${RABBITMQ_PORT}
