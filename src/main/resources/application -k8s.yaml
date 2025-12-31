@@ -24,4 +24,4 @@ rabbitmq:
 
 # Example of a custom property
 service:
-  message: "Notification Service is running in ${spring.profiles.active} mode."
+  message: "Notification Service is running in on the ${spring.profiles.active} mode."
